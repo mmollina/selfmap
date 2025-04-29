@@ -16,3 +16,5 @@ Encoding: UTF-8
 LazyData: true
 Imports: Rcpp (>= 1.0.14)
 LinkingTo: Rcpp
+URL: https://github.com/mmollina/selfmap
+BugReports: https://github.com/mmollina/selfmap/issues
