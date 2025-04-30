@@ -1,20 +1,26 @@
 Package: selfmap
 Type: Package
-Title: What the Package Does (Title Case)
+Title: EM-Based Recombination Fraction Estimation in Selfing Populations
 Version: 0.1.0
-Authors@R: c(
-    person(
-      "Jane", "Doe",
-      email = "jane@example.com",
-      role = c("aut", "cre")
-    )
-  )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
-License: What license is it under?
+Authors@R: person(given = "Marcelo",
+                 family = "Mollinari",
+                 email = "mmollin@ncsu.edu",
+                 role = c("aut", "cre"))
+Description: Provides efficient algorithms for estimating recombination
+    fractions in partially inbred (e.g., F2, F6) populations using
+    hidden Markov models and the expectation-maximization (EM) algorithm.
+    Includes functions for genotype data preprocessing, forward–backward
+    inference in HMMs, and map accuracy visualization. Implements core
+    computations in C++ via Rcpp.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 1.0.14)
+Imports:
+    Rcpp,
+    ggplot2,
+    ggpointdensity,
+    stats
 LinkingTo: Rcpp
 URL: https://github.com/mmollina/selfmap
 BugReports: https://github.com/mmollina/selfmap/issues
+RoxygenNote: 7.3.2
