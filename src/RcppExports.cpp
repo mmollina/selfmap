@@ -10,6 +10,33 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// estimate_recombination_cpp
+List estimate_recombination_cpp(DataFrame geno_df, double tol, int max_iter, Nullable<NumericVector> r_init);
+RcppExport SEXP _selfmap_estimate_recombination_cpp(SEXP geno_dfSEXP, SEXP tolSEXP, SEXP max_iterSEXP, SEXP r_initSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< DataFrame >::type geno_df(geno_dfSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericVector> >::type r_init(r_initSEXP);
+    rcpp_result_gen = Rcpp::wrap(estimate_recombination_cpp(geno_df, tol, max_iter, r_init));
+    return rcpp_result_gen;
+END_RCPP
+}
+// forward_backward_cpp
+List forward_backward_cpp(IntegerVector geno, int t, NumericVector r);
+RcppExport SEXP _selfmap_forward_backward_cpp(SEXP genoSEXP, SEXP tSEXP, SEXP rSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type geno(genoSEXP);
+    Rcpp::traits::input_parameter< int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type r(rSEXP);
+    rcpp_result_gen = Rcpp::wrap(forward_backward_cpp(geno, t, r));
+    return rcpp_result_gen;
+END_RCPP
+}
 // placeholder_cpp
 void placeholder_cpp();
 RcppExport SEXP _selfmap_placeholder_cpp() {
@@ -21,6 +48,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_selfmap_estimate_recombination_cpp", (DL_FUNC) &_selfmap_estimate_recombination_cpp, 4},
+    {"_selfmap_forward_backward_cpp", (DL_FUNC) &_selfmap_forward_backward_cpp, 3},
     {"_selfmap_placeholder_cpp", (DL_FUNC) &_selfmap_placeholder_cpp, 0},
     {NULL, NULL, 0}
 };

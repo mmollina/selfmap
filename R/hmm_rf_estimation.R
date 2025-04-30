@@ -1,15 +1,76 @@
-#' @title Recombination‐Fraction Estimation via EM
-#' @description Given a data frame of genotypes and F_gen, iteratively estimate the vector of r's.
-#' @param geno_df  Data.frame with columns “F_gen” plus marker columns (0/1/2/NA)
-#' @param tol      Convergence tolerance (default 1e-5)
-#' @param max_iter Max EM iterations (default 1e3)
-#' @param r_init   Initial vector of length (markers − 1)
-#' @return A list with `r` (estimated recombination fractions) and `iterations`
+#' Estimate recombination fractions with an HMM–EM algorithm
+#'
+#' `estimate_recombination()` is a thin R-level wrapper around the
+#' C++ engine `estimate_recombination_cpp()`.
+#' The routine treats each chromosome as a three-state hidden-Markov model
+#' (AA, AB, BB) whose transition matrix is a function of the unknown vector
+#' **r** = (r\_1, …, r\_{m-1}).
+#' An Expectation–Maximisation (EM) loop is run:
+#'
+#' * **E-step** – for every individual the C++ routine calls
+#'   `forward_backward_cpp()` to obtain the posterior joint-transition
+#'   probabilities \eqn{\xi\_{k,ij}} at the current **r**.
+#' * **M-step** – the expected numbers of *odd* vs *even* recombinant
+#'   gametes are updated and a closed-form parity estimator is used to
+#'   refresh \eqn{r\_k}.
+#'
+#' The algorithm converges when the maximum change in **r** across
+#' intervals is below `tol` or when `max_iter` iterations are reached.
+#'
+#' @section Important assumptions:
+#' * The implementation is **optimised for F\eqn{_2} individuals**
+#'   (one generation of selfing).  It will run on later generations
+#'   (F\eqn{_3}, F\eqn{_6}, …) but the estimates can be biased.
+#' * All marker columns must have exactly the same ordering for every
+#'   individual and contain the discrete dosages 0 / 1 / 2 or `NA`.
+#'
+#' @param geno_df  A `data.frame` with one row per individual.
+#'                 The first column must be named **`F_gen`** and give the
+#'                 selfing generation number (e.g. `2` for F\eqn{_2}).
+#'                 Every other column is interpreted as a biallelic marker
+#'                 encoded 0, 1, 2 or `NA`.
+#' @param tol      Convergence threshold for the maximum absolute change in
+#'                 \eqn{r\_k} between successive EM iterations.
+#'                 Default is `1e-5`.
+#' @param max_iter Maximum number of EM iterations.  Default `1000`.
+#' @param r_init   Optional numeric vector of length *(markers – 1)* providing
+#'                 starting values for **r**.  If `NULL`, all intervals start
+#'                 at 0.1.
+#'
+#' @return A list with two components
+#' \describe{
+#'   \item{`r`}{A numeric vector of length *(markers – 1)* with the
+#'              estimated recombination fractions.}
+#'   \item{`iterations`}{The number of EM iterations actually performed.}
+#' }
+#'
+#' @examples
+#' ## Toy example with simulated F2 data
+#' set.seed(123)
+#' sim <- SIMpoly::simulate_selfing_multi(n.mrk = 10,
+#'                                        map.len = 50,
+#'                                        n.ind  = 50,
+#'                                        F.generations = 2)
+#' est <- estimate_recombination(sim$geno$F_2)
+#' est$r
+#'
+#' @seealso
+#' * `forward_backward_cpp()` – C++ forward–backward used in the E-step
+#' * `estimate_recombination_cpp()` – the underlying C++ implementation
+#'
 #' @export
 estimate_recombination <- function(geno_df,
                                    tol      = 1e-5,
                                    max_iter = 1000,
                                    r_init   = NULL) {
+  estimate_recombination_cpp(geno_df, tol, max_iter, r_init)
+}
+
+#' @export
+estimate_recombination_R_version <- function(geno_df,
+                                             tol      = 1e-5,
+                                             max_iter = 1000,
+                                             r_init   = NULL) {
   if (any(geno_df$F_gen > 2)) {
     warning(
       "Some individuals have F_gen > 2. ",
