@@ -66,14 +66,21 @@ estimate_recombination <- function(geno_df,
   estimate_recombination_cpp(geno_df, tol, max_iter, r_init)
 }
 
-delta <- function(t,r){
-  if(t == 2) return(1.0)
-  else if(t == 3) return(1.502)
-  else if(t == 4) return(1.746)
-  else if(t == 5) return(1.873)
-  else if(t == 6) return(1.936)
-  else if(t > 6) return(1.0)
+delta <- function(t, r) {
+  switch(
+    as.character(t),
+    '2' = 1.000,
+    '3' = 1.500,
+    '4' = 1.745,
+    '5' = 1.866,
+    '6' = 1.925,
+    '7' = 1.955,
+    '8' = 1.967,
+    '9' = 1.976,
+    1.000  # default for all other t (including t > 9)
+  )
 }
+
 
 #' @export
 estimate_recombination_R_version <- function(geno_df,
@@ -128,7 +135,7 @@ estimate_recombination_R_version <- function(geno_df,
             xi_k[2, 3] + 2 * xi_k[3, 1] +
             xi_k[3, 2]
         ) / (2 * n_ind * d))
-        if(geno_df[["F_gen"]][j] > 6)
+        if(geno_df[["F_gen"]][j] > 9)
           temp <-   temp / (2 * (1 - temp))
         sum_odd[k] <- sum_odd[k] + temp
       }
