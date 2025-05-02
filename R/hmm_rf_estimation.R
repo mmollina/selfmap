@@ -66,6 +66,15 @@ estimate_recombination <- function(geno_df,
   estimate_recombination_cpp(geno_df, tol, max_iter, r_init)
 }
 
+delta <- function(t,r){
+  if(t == 2) return(1.0)
+  else if(t == 3) return(1.502)
+  else if(t == 4) return(1.746)
+  else if(t == 5) return(1.873)
+  else if(t == 6) return(1.936)
+  else if(t > 6) return(1.0)
+}
+
 #' @export
 estimate_recombination_R_version <- function(geno_df,
                                              tol      = 1e-5,
@@ -110,17 +119,20 @@ estimate_recombination_R_version <- function(geno_df,
     for (k in seq_len(n_intervals)) {
       for (j in seq_len(n_ind)) {
         xi_k <- Xi_list[[j]][k, , ]
+        d <- delta(geno_df[["F_gen"]][j])
         # parity weight for AA→AA etc.
         p2 <- 2 * r_old[k]^2 / (r_old[k]^2 + (1 - r_old[k])^2)
-        sum_odd[k] <- sum_odd[k] + (
+        temp <- ((
           xi_k[1, 2] + 2 * xi_k[1, 3] +
             xi_k[2, 1] + p2 * xi_k[2, 2] +
             xi_k[2, 3] + 2 * xi_k[3, 1] +
             xi_k[3, 2]
-        ) / (2 * n_ind)
+        ) / (2 * n_ind * d))
+        if(geno_df[["F_gen"]][j] > 6)
+          temp <-   temp / (2 * (1 - temp))
+        sum_odd[k] <- sum_odd[k] + temp
       }
     }
-
     r <- sum_odd
     iter <- iter + 1
   }
