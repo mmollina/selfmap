@@ -110,6 +110,9 @@ ggsave(
 )
 saveRDS(df_test, "df_test_corrected_for_bias.rds")
 
+df_1 <- readRDS("~/repos/official_repos/selfmap/misc/df_weights.rds")
+df_2 <- readRDS("~/repos/official_repos/selfmap/misc/df_test_corrected_for_bias.rds")
+plot_simulation_compare_grid(df_1,df_2,title_prefix = "", ncol = 4)
 
 #-------------------------------------------------------------------------------
 # Scenario 3: Mixture families (F2 + F6 pooled)
