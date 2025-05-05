@@ -7,18 +7,19 @@
 #include <Rcpp.h>
 #include "forward_backward.h"
 using namespace Rcpp;
+#define EPSILON 0.0
 
 // inline version of your R delta()
-inline double delta_cpp(int t) {
+inline double delta_cpp(int t, double epsilon) {
   switch(t) {
   case 2: return 1.000;
-  case 3: return 1.500;
-  case 4: return 1.745;
-  case 5: return 1.866;
-  case 6: return 1.925;
-  case 7: return 1.955;
-  case 8: return 1.967;
-  case 9: return 1.976;
+  case 3: return 1.500 + epsilon;
+  case 4: return 1.745 + epsilon;
+  case 5: return 1.866 + epsilon;
+  case 6: return 1.923 + epsilon;
+  case 7: return 1.954 + epsilon;
+  case 8: return 1.969 + epsilon;
+  case 9: return 1.976 + epsilon;
   default: return 1.000;
   }
 }
@@ -31,14 +32,6 @@ List estimate_recombination_cpp(DataFrame               geno_df,
 {
   IntegerVector F_gen = geno_df["F_gen"];
   int n_ind = F_gen.size();
-
-  // warn if not F2-ish
-  for (int i = 0; i < n_ind; ++i) {
-    if (F_gen[i] > 2) {
-      warning("Some individuals have F_gen > 2; results may be biased.");
-      break;
-    }
-  }
 
   // collect marker columns
   CharacterVector all_names = geno_df.names();
@@ -97,7 +90,7 @@ List estimate_recombination_cpp(DataFrame               geno_df,
           return xi[k + di * (a + dj * b)];
         };
 
-        double d = delta_cpp(F_gen[i]);
+        double d = delta_cpp(F_gen[i], EPSILON);
         for (int k = 0; k < n_intervals; ++k) {
           // parity weight
           double p2 = 2 * r_old[k]*r_old[k] /

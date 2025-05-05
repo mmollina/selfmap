@@ -87,14 +87,6 @@ estimate_recombination_R_version <- function(geno_df,
                                              tol      = 1e-5,
                                              max_iter = 1000,
                                              r_init   = NULL) {
-  if (any(geno_df$F_gen > 2)) {
-    warning(
-      "Some individuals have F_gen > 2. ",
-      "This experimental version of the algorithm assumes F2 (one selfing cycle), ",
-      "so results for later generations (e.g., F3, F6) may be biased. ",
-      "Use with caution."
-    )
-  }
   marker_cols <- setdiff(names(geno_df), "F_gen")
   n_markers   <- length(marker_cols)
   if (n_markers < 2) stop("Need at least two marker columns")
