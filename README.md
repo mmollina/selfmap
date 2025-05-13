@@ -2,8 +2,6 @@
 
 **selfmap** is an experimental R package for estimating recombination fractions in selfing populations using a hidden Markov model (HMM) and expectation-maximization (EM) algorithm. This implementation focuses on partially inbred populations (e.g., F₂) and is currently optimized for that use case.
 
-> ⚠️ **Warning**: Although the code can handle individuals from generations beyond F₂ (e.g., F₆), the current algorithm assumes an F₂ structure. Results for later generations may be biased. Use with caution in such cases.
-
 ## Installation
 
 To install `selfmap` and its dependencies, including the simulation tool [`SIMpoly`](https://github.com/mmollina/SIMpoly), use:
